@@ -1,113 +1,209 @@
-import Image from 'next/image'
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { BiSolidMemoryCard } from "react-icons/bi";
+import { memory } from "@/data/Memory";
+import { IconsItems } from "@/components/IconsItems";
+import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
+
+const Page = () => {
+  const [active, setActive] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(0);
+  const [listCard, setListCard] = useState<number[]>([]);
+  const [check, setCheck] = useState<number[]>([]);
+  const [confirm, setConfirm] = useState<number[]>([]);
+  const [count, setCount] = useState<number>(0);
+  const [final, setFinal] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDate(new Date());
+      if (active) {
+        if (confirm.length === 6) {
+          setActive(false);
+          setFinal(true);
+        }
+        setTime(time + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [active, time]);
+
+  const handleReset = () => {
+    setConfirm([]);
+    setTime(0);
+    setActive(false);
+    setCount(0);
+  };
+
+  const handleFinal = () => {
+    handleReset();
+    setFinal(false);
+  };
+
+  const handleActiveCard = (cardId: number, id: number) => {
+    if (active) {
+      if (listCard.length < 2) {
+        setListCard([...listCard, cardId]);
+        if (listCard.includes(cardId)) {
+          setCheck([]);
+          alert("mesmo card");
+        } else {
+          if (check.includes(id)) {
+            setCheck([]);
+            setConfirm([...confirm, id]);
+          } else if (check.length === 1) {
+            setCheck([]);
+          } else {
+            setCheck([...check, id]);
+          }
+        }
+      }
+
+      console.log(listCard.length);
+
+      if (listCard.length === 1) {
+        setTimeout(() => {
+          setListCard([]);
+          setCount(count + 1);
+        }, 1000);
+      }
+    } else {
+      alert("tem iniciar antes");
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="w-sreen h-screen bg-slated-100 flex flex-col justify-center items-center lg:flex-row">
+      <div className="flex flex-col justify-between lg:mr-10">
+        <div className="flex flex-col items-center lg:items-start">
+          <h1 className="text-3xl text-fuchsia-500 font-bold">DevMomory</h1>
+          <div className="text-sm text-sky-400 border-fuchsia-500 border-l-2 pl-3 pb-2">
+            <p>made by @JoãoNaif</p>
+            <p>powered by B7web</p>
+          </div>
+        </div>
+        <div className="flex justify-between items-center lg:flex-col lg:items-start">
+          <div className="flex flex-col my-6">
+            <span className="text-sm text-sky-400">Tempo</span>
+            <div className="text-3xl font-bold text-fuchsia-500">
+              <p>{time} Seg</p>
+            </div>
+          </div>
+          <div className="text-right lg:text-left">
+            <span className="text-sm text-sky-400">Movimento</span>
+            <div className="text-3xl font-bold text-fuchsia-500">{count}</div>
+          </div>
+        </div>
+        <div className="flex lg:flex-col items-center lg:items-start gap-4">
+          <button
+            className="font-bold bg-gradient-to-tl to-fuchsia-500 via-purple-800 from-sky-400 text-white p-2 w-full rounded-md hover:from-indigo-900 hover:via-blue-600 hover:to-sky-400 hover:text-fuchsia-300 hover:transition-colors hover:duration-300 hover:ease-in my-3"
+            onClick={() => setActive(true)}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            Iniciar
+          </button>
+          <button
+            onClick={handleReset}
+            className="font-bold bg-gradient-to-tr to-fuchsia-500 via-purple-800 from-sky-400 text-white p-2 w-full rounded-md hover:from-indigo-900 hover:via-blue-600 hover:to-sky-400 hover:text-fuchsia-300 hover:transition-colors hover:duration-300 hover:ease-in"
+          >
+            Reiniciar
+          </button>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+      <ul className="grid grid-cols-4 grid-rows-3 gap-2 ">
+        {memory.map((item) => (
+          <li
+            key={item.cardId}
+            onClick={() => handleActiveCard(item.cardId, item.id)}
+            className={`lg:w-32 lg:h-32 md:w-24 md:h-24 w-16 h-16  rounded-lg flex justify-center items-center cursor-pointer  ${
+              confirm.includes(item.id) === true
+                ? "bg-gradient-to-tr to-fuchsia-500 via-purple-800 from-sky-400"
+                : "bg-zinc-500 hover:border-indigo-700 hover:border-4"
+            }`}
+          >
+            {listCard.includes(item.cardId) || confirm.includes(item.id) ? (
+              <li>
+                <IconsItems id={item.id} />
+              </li>
+            ) : (
+              <BiSolidMemoryCard className={`text-4xl text-zinc-300`} />
+            )}
+          </li>
+        ))}
+      </ul>
+      {final && (
+        <div
+          className="absolute w-screen h-screen lg:bg-black lg:bg-opacity-80 flex justify-center items-center
+        bg-fuchsia-500
+        "
         >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <div className="lg:h-[500px] lg:w-[500px] p-2 lg:bg-gradient-to-tr lg:to-fuchsia-500 lg:via-purple-800 lg:from-sky-400 rounded-md">
+            <h1 className="text-white text-2xl text-center mb-5 font-bold">
+              Parabéns! <br /> Você conseguiu finalizar o desafio!
+            </h1>
+            <div className="flex">
+              <div className="flex-1 text-white text-center">
+                <h1 className="text-xl ">Seu tempo:</h1>
+                <p className="text-5xl my-10">
+                  {Math.floor(time / 60) >= 10
+                    ? Math.floor(time / 60)
+                    : `0${Math.floor(time / 60)}`}
+                  :{time % 60 >= 10 ? time % 60 : `0${time % 60}`}
+                </p>
+                <p>
+                  Data:{" "}
+                  {date.getDate() +
+                    "/" +
+                    (date.getMonth() + 1) +
+                    "/" +
+                    date.getFullYear()}
+                </p>
+              </div>
+              <div className="flex-1 text-white text-center">
+                <h1 className="text-xl">Conseguiu em:</h1>
+                <p className="text-5xl my-10">{count}</p>
+                <p>mínimo de tentativa 6</p>
+              </div>
+            </div>
+            <div className="text-center text-white mt-7">
+              <h1 className="text-xl">Me segue na redes sociais</h1>
+              <ul className="flex justify-center gap-4 text-4xl mt-3">
+                <li>
+                  <a
+                    target="_blank"
+                    href="https://www.instagram.com/joaonaif/?hl=pt-br"
+                  >
+                    <FaInstagram />
+                  </a>
+                </li>
+                <li>
+                  <a target="_blank" href="https://github.com/JoaoNaif">
+                    <FaGithub />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    target="_blank"
+                    href="https://www.linkedin.com/in/joaonaif/"
+                  >
+                    <FaLinkedinIn />
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <button
+              className="bg-white text-fuchsia-600 border lg:text-white lg:bg-transparent w-full mt-10 py-3 text-3xl rounded-md  hover:bg-white hover:text-fuchsia-500 font-bold hover:transition-colors hover:duration-300 hover:ease-out "
+              onClick={handleFinal}
+            >
+              Finalizar
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default Page;
